@@ -1,0 +1,30 @@
+The pipeline should be created under
+
+/etc/logstash/conf.d/           /******** Can create your own folder and create the .conf files under the same folder*************/
+
+Configure pipeline path 
+
+edit /etc/logstash/pipeline.yml
+
+and add the pipeline path
+
+-pipeline.id: any name
+ pipeline.path: /"etc/logstash/conf.d/yourfolder/*.conf"
+ 
+ then save and exit and restart logstash
+ resrat filebeat
+ or juts filebeat -e for some munets and then systemctl filebeat restart
+ 
+ Enable the below modules for various logs
+ 
+ filebeat modules enable system       /*** for system logs***/
+ filebeat modules enable elasticsearch /*** for elasticsearch logs***/
+ filebeat modules enable logstash /****for logstash logs****/
+ 
+ Always check the below ports are up and running
+ 
+ Elasticsearch : 9200/9300
+ Kibana: 5601
+ Logstash: 5044 (Depends on your configuration)
+ 
+ Allow the above ports in firewall-cmd
