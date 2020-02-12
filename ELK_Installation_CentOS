@@ -1,0 +1,44 @@
+update the system
+
+yum update -y
+
+then install java
+
+yum install java-11-openjdk.x86_64 java-11-openjdk-devel-x86_64 java-11-openjdk-headless.x86_64
+
+verify java is install by runnin
+
+java -version
+
+now create a new repos file for elastiocsearch under 
+/etc/yum.repos.d/
+
+name the repo as elasticsearch.repo
+
+and the provide the below inputs
+
+[elasticsearch-7.x]
+name=Elasticsearch repository for 7.x packages
+baseurl=https://artifacts.elastic.co/packages/7.x/yum
+gpgcheck=1
+gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
+enabled=1
+autorefresh=1
+type=rpm-md
+
+[elasticsearch-6.x]
+name=Elasticsearch repository for 6.x packages
+baseurl=https://artifacts.elastic.co/packages/6.x/yum
+gpgcheck=1
+gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
+enabled=1
+autorefresh=1
+type=rpm-md
+
+and save and exit
+
+now install ELK stack by running the below command line
+
+yum install -y elasticseach.x86_64 kibana.x86_64 logstash.noarch filebeat.x86_64
+
+
