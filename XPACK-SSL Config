@@ -76,4 +76,11 @@ Then save and exit. And restart kibana service
 
 systemctl restart kibana.service
 
+
+To generate password of elasticsearch, kibana, logstash & etc run the below commnad  -
+
+/usr/share/elasticsearch/bin/elasticsearch-setup-passwords auto  /*** it will genrate random password***/
+/usr/share/elasticsearch/bin/elasticsearch-setup-passwords interactive /**** You will get provide password for the entire elk stack***/
+
+
 and you are done.
