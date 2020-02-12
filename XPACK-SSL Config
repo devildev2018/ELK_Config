@@ -1,0 +1,79 @@
+Configuration of SSL and X-Pack Modules in Elasticsearch and Kibana
+
+Create a File called instances.yml under /usr/share/elasticsearch
+Provide the below content in the file -
+
+instances:
+    - name: "elasticsearch"
+      ip:
+        - "x.x.x.x" - should be elasticsearch ip
+    - name: "kibana"
+      ip:
+        - "x.x.x.x" - should be kibana ip
+
+Then save and exit
+
+and run the below command to generate ssl certificates
+
+/usr/share/elasticsearch/bin/elasticsearch-certutil cert --pem --in instances.yml --out certs.zip --keep-ca-key
+
+the above command will generate a zip file called certs.zip
+
+now extract the zip file under
+
+unzip /usr/share/elasticsearch/certs.zip -d /usr/share/elasticsearch
+
+Then  directories with same names under /etc/elasticsearch & /etc/kibana
+
+mkdir /etc/elasticsearch/certs/ca -p
+cp ca/ca.crt /etc/elasticsearch/certs/ca
+cp elasticsearch/elasticsearch.crt /etc/elasticsearch/certs
+cp elasticsearch/elasticsearch.key /etc/elasticsearch/certs
+chown -R elasticsearch: /etc/elasticsearch/certs
+chmod -R 770 /etc/elasticsearch/certs
+
+mkdir /etc/kibana/certs/ca -p
+cp ca/ca.crt /etc/kibana/certs/ca
+cp kibana/kibana.crt /etc/kibana/certs
+cp kibana/kibana.key /etc/kibana/certs
+chown -R kibana: /etc/kibana/certs
+chmod -R 770 /etc/kibana/certs
+
+Once the above steps done edit elasticsearch.yml file under /etc/elasticsearch/elasticsearch.yml
+
+and input the below x-pack values 
+
+xpack.security.transport.ssl.enabled: true
+xpack.security.transport.ssl.verification_mode: certificate
+xpack.security.transport.ssl.key: /etc/elasticsearch/certs/elasticsearch.key
+xpack.security.transport.ssl.certificate: /etc/elasticsearch/certs/elasticsearch.crt
+xpack.security.transport.ssl.certificate_authorities: [ "/etc/elasticsearch/certs/ca/ca.crt" ]
+
+xpack.security.http.ssl.enabled: true
+xpack.security.http.ssl.verification_mode: certificate
+xpack.security.http.ssl.key: /etc/elasticsearch/certs/elasticsearch.key
+xpack.security.http.ssl.certificate: /etc/elasticsearch/certs/elasticsearch.crt
+xpack.security.http.ssl.certificate_authorities: [ "/etc/elasticsearch/certs/ca/ca.crt" ]
+
+now save and exit then restart elasticsearch service
+
+systemctl restart elasticsearch.service
+
+and add the below x-pack configuration under /etc/kibana/kibana.yml
+
+elasticsearch.hosts: ["https:x.x.x.x:9200"]
+elasticsearch.ssl.certificateAuthorities: ["/etc/kibana/certs/ca/ca.crt"]
+elasticsearch.ssl.certificate: "/etc/kibana/certs/kibana.crt"
+elasticsearch.ssl.key: "/etc/kibana/certs/kibana.key"
+
+server.ssl.enabled: true
+server.ssl.certificate: "/etc/kibana/certs/kibana.crt"
+server.ssl.key: "/etc/kibana/certs/kibana.key"
+xpack.security.enabled: true
+xpack.security.sessionTimeout: 300000
+
+Then save and exit. And restart kibana service
+
+systemctl restart kibana.service
+
+and you are done.
